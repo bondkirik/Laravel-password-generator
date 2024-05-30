@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+    - ./:/var/www
+    ports:
+    - "8080:80"
+    links:
+      - php-fpm
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www
+  node:
+    image: node:18-alpine
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+    tty: true
+  composer:
+    build:
+      context: ./docker/composer
+      dockerfile: composer.Dockerfile
+    volumes:
+      - ./:/var/www
+  artisan:
+    build:
+      context: ./docker/php-fpm
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www
+    entrypoint: ["php", "/var/www/artisan"]
